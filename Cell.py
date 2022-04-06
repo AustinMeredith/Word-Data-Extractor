@@ -2,12 +2,12 @@ from TextualElement import *
 from GraphicalElement import *
 
 class Cell():
-    def __init__(self, text, graphics, table, columnNum, rowNum):
-        self.textualElements = text
-        self.graphicalElements = graphics
-        self.tableName = table
-        self.column = columnNum
-        self.row = rowNum
+    def __init__(self, textList, graphicsList, tableString, columnInt, rowInt):
+        self.textualElements = textList
+        self.graphicalElements = graphicsList
+        self.tableName = tableString
+        self.column = columnInt
+        self.row = rowInt
 
     def getTextualElements(self):
         return self.textualElements
