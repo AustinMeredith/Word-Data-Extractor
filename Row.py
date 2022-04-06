@@ -1,8 +1,8 @@
 class Row():
-    def __init__(self):
-        self.tableName = ""
-        self.rowName = ""
-        self.numberOfCells = 0
+    def __init__(self, tableString, rowString, cellsInt):
+        self.tableName = tableString
+        self.rowName = rowString
+        self.numberOfCells = cellsInt
 
     def getTableName(self):
         return self.tableName

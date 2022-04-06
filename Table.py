@@ -3,15 +3,15 @@ from Row import *
 from Cell import *
 
 class Table():
-    def __init__(self):
-        self.columns = []
-        self.rows = []
-        self.cells= []
-        self.numberOfColumns = 0
-        self.numberOfRows = 0
-        self.lineNumber = 0
-        self.sectionOfDocument = ""
-        self.tableName = ""
+    def __init__(self, columnsList, rowsList, cellsList, numColumnsInt, numRowsInt, lineInt, sectionString, tableNameString):
+        self.columns = columnsList
+        self.rows = rowsList
+        self.cells = cellsList
+        self.numberOfColumns = numColumnsInt
+        self.numberOfRows = numRowsInt
+        self.lineNumber = lineInt
+        self.sectionOfDocument = sectionString
+        self.tableName = tableNameString
 
     def getColumns(self):
         return self.columns

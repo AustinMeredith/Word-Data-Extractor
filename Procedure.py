@@ -2,13 +2,13 @@ from TextualElement import *
 from GraphicalElement import *
 
 class Procedure():
-    def __init__(self):
-        self.steps = []
-        self.graphics = []
-        self.procedureName = ""
-        self.lineNumber = 0
-        self.sectionOfDocument = ""
-        self.numberOfSteps = 0
+    def __init__(self, stepList, graphicsList, nameString, lineInt, sectionString, numStepsInt):
+        self.steps = stepList
+        self.graphics = graphicsList
+        self.procedureName = nameString
+        self.lineNumber = lineInt
+        self.sectionOfDocument = sectionString
+        self.numberOfSteps = numStepsInt
 
     def getSteps(self):
         return self.steps

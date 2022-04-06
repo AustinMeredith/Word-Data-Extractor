@@ -1,8 +1,8 @@
 class Column():
-    def __init__(self):
-        self.tableName = ""
-        self.columnName = ""
-        self.numberOfCells = 0
+    def __init__(self, tableString, columnString, cellsInt):
+        self.tableName = tableString
+        self.columnName = columnString
+        self.numberOfCells = cellsInt
 
     def getTableName(self):
         return self.tableName

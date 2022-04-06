@@ -1,10 +1,10 @@
 from Run import *
 class TextualElement():
-    def __init__(self):
-        self.lineNumber = 0
-        self.headerFooterBody = 0
-        self.sectionOfDocument = ""
-        self.runs = []
+    def __init__(self, lineInt, hfbInt, sectionString, runsList):
+        self.lineNumber = lineInt
+        self.headerFooterBody = hfbInt
+        self.sectionOfDocument = sectionString
+        self.runs = runsList
 
     def getLineNumber(self):
         return self.lineNumber
@@ -39,5 +39,24 @@ class TextualElement():
     def extractText(self, lineNumber):
         return True
     
-    def XMLReturn(self): #Unimplemented working on it next few days
-        return ""
+    def indent(self, indentAmt): #Used in XMLReturn returns spaces for indentation
+        indentation = ""
+        for x in range(indentAmt):
+            indentation += "  "
+        return indentation
+    
+    def XMLReturn(self, indentAmt): #Returns the XML code for this object as a string
+        xml = ""
+        xml += self.indent(indentAmt)
+        xml += "<TextualElement"
+        xml += " LineNumber=\"" + str(self.lineNumber)
+        xml += "\" HeaderFooterBody=\"" + str(self.headerFooterBody)
+        xml += "\" SectionOfDocument=\"" + self.sectionOfDocument + "\">"
+        for run in self.runs:
+            xml += "\n"
+            xml += self.indent(indentAmt + 1)
+            xml += run.XMLReturn()
+        xml += "\n"
+        xml += self.indent(indentAmt)
+        xml += "</TextualElement>"
+        return xml

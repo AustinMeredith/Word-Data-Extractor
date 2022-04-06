@@ -2,17 +2,17 @@ from TextualElement import *
 from GraphicalElement import *
 
 class Cell():
-    def __init__(self):
-        self.textualElements = []
-        self.graphicalElements = []
-        self.tableName = ""
-        self.column = 0
-        self.row = 0
+    def __init__(self, textList, graphicsList, tableString, columnInt, rowInt):
+        self.textualElements = textList
+        self.graphicalElements = graphicsList
+        self.tableName = tableString
+        self.column = columnInt
+        self.row = rowInt
 
     def getTextualElements(self):
         return self.textualElements
 
-    def getGraphics(self):
+    def getGraphicalElements(self):
         return self.graphicalElements
 
     def getTableName(self):
@@ -48,5 +48,28 @@ class Cell():
     def extractCell(self, lineNumber):
         return True
     
-    def XMLReturn(self): #Unimplemented working on it next few days
-        return ""
+    def indent(self, indentAmt): #Used in XMLReturn returns spaces for indentation
+        indentation = ""
+        for x in range(indentAmt):
+            indentation += "  "
+        return indentation
+    
+    def XMLReturn(self, indentAmt): #Returns the XML Code for this object as a string
+        xml = ""
+        xml += self.indent(indentAmt)
+        xml += "<Cell"
+        xml += " Row=\"" + str(self.row)
+        xml += "\" Column=\"" + str(self.column)
+        xml += "\" Table=\"" + self.tableName + "\">"
+        for text in self.textualElements:
+            xml += "\n"
+            xml += self.indent(indentAmt + 1)
+            xml += text.XMLReturn()
+        for graphic in self.graphicalElements:
+            xml += "\n"
+            xml += self.indent(indentAmt + 1)
+            xml += graphic.XMLReturn()
+        xml += "\n"
+        xml += self.indent(indentAmt)
+        xml += "</Cell>"
+        return xml

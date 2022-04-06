@@ -1,11 +1,11 @@
 class Run():
-    def __init__(self):
-        self.text = ""
-        self.bold = False
-        self.font = ""
-        self.italic = False
-        self.style = ""
-        self.underline = False
+    def __init__(self, textString, boldBool, fontString, italicBool, styleString, underlineBool):
+        self.text = textString
+        self.bold = boldBool
+        self.font = fontString
+        self.italic = italicBool
+        self.style = styleString
+        self.underline = underlineBool
 
     def getText(self):
         return self.text
@@ -43,5 +43,23 @@ class Run():
     def setUnderline(self, underlineArg):
         self.underline = underlineArg
 
-    def XMLReturn(self): #Unimplemented working on it next few days
-        return ""
+    def XMLReturn(self): #Returns the XML code as a string
+        xml = "<Run"
+        xml += " Text=\"" + self.text + "\" Bold=\"" 
+        if(self.bold):
+            xml += "true"
+        else:
+            xml += "false"
+        xml += "\" Italic=\""
+        if(self.italic):
+            xml += "true"
+        else:
+            xml += "false"
+        xml += "\" Underline=\""
+        if(self.underline):
+            xml += "true"
+        else:
+            xml += "false"
+        xml += "\" Font=\"" + self.font
+        xml += "\" Style=\"" + self.style + "\"/>"
+        return xml
