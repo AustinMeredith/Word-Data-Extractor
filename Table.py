@@ -58,7 +58,7 @@ class Table():
     def setSectionOfDocument(self, sectionOfDocumentArg):
         self.sectionOfDocument = sectionOfDocumentArg
 
-    def setTableNameArg(self, TableNameArg):
+    def setTableName(self, TableNameArg):
         self.tableName = TableNameArg
 
     #Identify and add collums rows and cells
@@ -76,6 +76,35 @@ class Table():
 
     def extractTable(self, lineNumber):
         return True
+
+    def indent(self, indentAmt): #Used in XMLReturn returns spaces for indentation
+        indentation = ""
+        for x in range(indentAmt):
+            indentation += "  "
+        return indentation
     
-    def XMLReturn(self): #Unimplemented working on it next few days
-        return ""
+    def XMLReturn(self, indentAmt): #Returns XML Code for this object as a string
+        xml = ""
+        xml += self.indent(indentAmt)
+        xml += "<Table"
+        xml += "TableName=\"" + self.tableName
+        xml += "\" LineNumber=\"" + str(self.lineNumber)
+        xml += "\" SectionOfDocument=\"" + self.sectionOfDocument
+        xml += "\" NumberOfRows=\"" + str(self.numberOfRows)
+        xml += "\" NumberOfColumns=\"" + str(self.numberOfColumns) + "\">"
+        for cell in self.cells:
+            xml += "\n"
+            xml += self.indent(indentAmt)
+            xml += cell.XMLReturn(indentAmt + 1)
+        for row in self.rows:
+            xml += "\n"
+            xml += self.indent(indentAmt + 1)
+            xml += row.XMLReturn()
+        for column in self.columns:
+            xml += "\n"
+            xml += self.indent(indentAmt + 1)
+            xml += column.XMLReturn()
+        xml += "\n"
+        xml += self.indent(indentAmt)
+        xml += "</Table>"
+        return xml

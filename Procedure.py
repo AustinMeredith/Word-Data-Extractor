@@ -52,5 +52,23 @@ class Procedure():
     def extractProcedure(self, lineNumber):
         return True
     
-    def XMLReturn(self): #Unimplemented working on it next few days
-        return ""
+    def XMLReturn(self, indentAmt): #Returns the XML Code for this object as a string
+        xml = ""
+        xml += self.indent(indentAmt)
+        xml += "<Procedure"
+        xml += " ProcedureName=\"" + self.procedureName
+        xml += "\" LineNumber=\"" + str(self.lineNumber)
+        xml += "\" SectionOfDocument" + self.sectionOfDocument
+        xml += "\" NumberOfSteps" + str(self.numberOfSteps) + "\">"
+        for text in self.steps:
+            xml += "\n"
+            xml += self.indent(indentAmt + 1)
+            xml += text.XMLReturn(indentAmt + 1)
+        for graphic in self.graphics
+            xml += "\n"
+            xml += self.indent(indentAmt + 1)
+            xml += graphic.XMLReturn()
+        xml += "\n"
+        xml += self.indent(indentAmt)
+        xml += "</Procedure>"
+        return xml

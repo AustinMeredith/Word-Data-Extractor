@@ -22,5 +22,9 @@ class Row():
     def setNumberOfCells(self, numberOfCellsArg):
         self.numberOfCells = numberOfCellsArg
     
-    def XMLReturn(self): #Unimplemented working on it next few days
-        return ""
+    def XMLReturn(self): #Returns the XML Code for this object as a string
+        xml = "<Row"
+        xml += " TableName=\"" + self.tableName
+        xml += "\" Name=\"" + self.rowName
+        xml += "\" NumberOfCells=\"" + str(self.numberOfCells) + "\"/>"
+        return xml

@@ -47,7 +47,6 @@ class TextualElement():
     
     def XMLReturn(self, indentAmt): #Returns the XML code for this object as a string
         xml = ""
-        xml += self.indent(indentAmt)
         xml += "<TextualElement"
         xml += " LineNumber=\"" + str(self.lineNumber)
         xml += "\" HeaderFooterBody=\"" + str(self.headerFooterBody)
