@@ -63,12 +63,10 @@ class Cell():
         xml += "\" Table=\"" + self.tableName + "\">"
         for text in self.textualElements:
             xml += "\n"
-            xml += self.indent(indentAmt + 1)
             xml += text.XMLReturn(indentAmt + 1)
         for graphic in self.graphicalElements:
             xml += "\n"
-            xml += self.indent(indentAmt + 1)
-            xml += graphic.XMLReturn()
+            xml += graphic.XMLReturn(indentAmt + 1)
         xml += "\n"
         xml += self.indent(indentAmt)
         xml += "</Cell>"

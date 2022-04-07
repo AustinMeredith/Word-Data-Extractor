@@ -34,9 +34,16 @@ class GraphicalElement():
 
     def extractGraphic(self, lineNumber):
         return True
-    
-    def XMLReturn(self): #Returns the XML code as a string
-        xml = "<GraphicalElement"
+
+    def indent(self, indentAmt): #Used in XMLReturn returns spaces for indentation
+        indentation = ""
+        for x in range(indentAmt):
+            indentation += "  "
+        return indentation
+
+    def XMLReturn(self, indentAmt): #Returns the XML code as a string. Note: indentAmt unused. It's here for the sake of polymorphism.
+        xml = self.indent(indentAmt)
+        xml += "<GraphicalElement"
         xml += " LineNumber=\"" + str(self.lineNumber)
         xml += "\" HeaderFooterBody=\"" + str(self.headerFooterBody)  
         xml += "\" SectionOfDocument=\"" + self.sectionOfDocument

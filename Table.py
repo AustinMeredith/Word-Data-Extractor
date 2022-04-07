@@ -87,14 +87,13 @@ class Table():
         xml = ""
         xml += self.indent(indentAmt)
         xml += "<Table"
-        xml += "TableName=\"" + self.tableName
+        xml += " TableName=\"" + self.tableName
         xml += "\" LineNumber=\"" + str(self.lineNumber)
         xml += "\" SectionOfDocument=\"" + self.sectionOfDocument
         xml += "\" NumberOfRows=\"" + str(self.numberOfRows)
         xml += "\" NumberOfColumns=\"" + str(self.numberOfColumns) + "\">"
         for cell in self.cells:
             xml += "\n"
-            xml += self.indent(indentAmt)
             xml += cell.XMLReturn(indentAmt + 1)
         for row in self.rows:
             xml += "\n"

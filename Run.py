@@ -43,7 +43,7 @@ class Run():
     def setUnderline(self, underlineArg):
         self.underline = underlineArg
 
-    def XMLReturn(self): #Returns the XML code as a string
+    def XMLReturn(self): #Returns the XML code as a string.
         xml = "<Run"
         xml += " Text=\"" + self.text + "\" Bold=\"" 
         if(self.bold):

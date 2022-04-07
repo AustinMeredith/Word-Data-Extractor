@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-targetNamespace="DataExtractors"
-xmlns="DataExtractors"
-elementFormDefault="qualified">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+<!--Root "WordDoc"-->
+<xs:element name="WordDoc" type="WordDoc"/>
+
+<xs:complexType name="WordDoc">
+  <xs:choice minOccurs="0" maxOccurs="unbounded">
+    <xs:element name="TextualElement" type="TextualElement"/>
+    <xs:element name="GraphicalElement" type="GraphicalElement"/>
+    <xs:element name="Table" type="Table"/>
+    <xs:element name="Procedure" type="Procedure"/>
+  </xs:choice>
+</xs:complexType>
+
 
 <!--Run-->
-<xs:element name="Run" type ="Run"/>
+<xs:element name="Run" type="Run"/>
 
 <xs:complexType name="Run">
   <xs:attribute name="Text" type="xs:string" use="required"/>
@@ -33,7 +43,7 @@ elementFormDefault="qualified">
 
 <xs:complexType name="TextualElement">
   <xs:sequence>
-    <xs:element name="Runs" type="Run" maxOccurs="100" minOccurs="1"/>
+    <xs:element name="Run" type="Run" maxOccurs="100" minOccurs="1"/>
   </xs:sequence>
 	<xs:attribute name="LineNumber" type="xs:integer"/>
 	<xs:attribute name="HeaderFooterBody" type="xs:integer"/>
@@ -46,8 +56,8 @@ elementFormDefault="qualified">
 	
 <xs:complexType name="Cell">
   <xs:sequence>
-    <xs:element name="Text" type="TextualElement" maxOccurs="10" minOccurs="0"/>
-    <xs:element name="Graphics" type="GraphicalElement" maxOccurs="10" minOccurs="0"/>
+    <xs:element name="TextualElement" type="TextualElement" maxOccurs="10" minOccurs="0"/>
+    <xs:element name="GraphicalElement" type="GraphicalElement" maxOccurs="10" minOccurs="0"/>
   </xs:sequence>
   <xs:attribute name="Row" type="xs:integer"/>
   <xs:attribute name="Column" type="xs:integer"/>
@@ -72,9 +82,9 @@ elementFormDefault="qualified">
 
 <xs:complexType name="Table">
   <xs:sequence>
-    <xs:element name="Cells" type="Cell" maxOccurs="10000" minOccurs="1"/>
-    <xs:element name="Rows" type="RowOrColumn" maxOccurs="100" minOccurs="1"/>
-    <xs:element name="Columns" type="RowOrColumn" maxOccurs="100" minOccurs="1"/>
+    <xs:element name="Cell" type="Cell" maxOccurs="10000" minOccurs="1"/>
+    <xs:element name="Row" type="RowOrColumn" maxOccurs="100" minOccurs="1"/>
+    <xs:element name="Column" type="RowOrColumn" maxOccurs="100" minOccurs="1"/>
   </xs:sequence>
   <xs:attribute name="TableName" type="xs:string"/>
   <xs:attribute name="LineNumber" type="xs:integer"/>
@@ -88,23 +98,13 @@ elementFormDefault="qualified">
 
 <xs:complexType name="Procedure">
   <xs:sequence>
-    <xs:element name="Steps" type="TextualElement" maxOccurs="100" minOccurs="1"/>
-    <xs:element name="Graphics" type="GraphicalElement" maxOccurs="100" minOccurs="0"/>
+    <xs:element name="TextualElement" type="TextualElement" maxOccurs="100" minOccurs="1"/>
+    <xs:element name="GraphicalElement" type="GraphicalElement" maxOccurs="100" minOccurs="0"/>
   </xs:sequence>
   <xs:attribute name="ProcedureName" type="xs:string"/>
   <xs:attribute name="LineNumber" type="xs:integer"/>
   <xs:attribute name="SectionOfDocument" type="xs:string"/>
   <xs:attribute name="NumberOfSteps" type="xs:string"/>
 </xs:complexType>
-
-<!--Root "WordDoc"-->
-<xs:element name="WordDoc">
-  <xs:complexType>
-    <xs:element name="Text" type="TextualElement" maxOccurs="1000" minOccurs="0"/>
-    <xs:element name="Graphics" type="GraphicalElement" maxOccurs="1000" minOccurs="0"/>
-    <xs:element name="Tables" type="Table" maxOccurs="1000" minOccurs="0"/>
-    <xs:element name="Procedures" type="Procedure" maxOccurs="100" minOccurs="0"/>
-  </xs:complexType>
-</xs:element>
 
 </xs:schema>

@@ -5,8 +5,18 @@ from Cell import *
 from Row import *
 from Column import *
 from Table import *
-#Creating 3 Run instances
+from Procedure import *
+from VariableUtility import *
+#using VariableUtility for its intended purpose
+vu = VariableUtility()
+print(vu.setOutputFileLocation("C:/Users/marti/Desktop/Word Data Extraction/XMLReturns"))
+print(vu.setOutputFileName("Matters.xml"))
+print(vu.setInputFilePath("C:/Users/marti/Desktop/Word Data Extraction/Test.docx"))
 
+#To be used for storing instances of objects with XMLReturn() method. 
+WordDocList = []
+
+#Creating 3 Run instances
 #Run Instance 1
 runInstance = Run("",False,"",False,"",False)
 runInstance.setText("Nothing really matters.")
@@ -34,7 +44,7 @@ runInstance3.setItalic(True)
 runInstance3.setStyle("Body")
 runInstance3.setUnderline(False)
 
-#Textual Element Instance
+#Textual Element Instances
 textualElementInstance = TextualElement(0,0,"",[])
 textualElementInstance.setLineNumber(52)
 textualElementInstance.setHeaderFooterBody(1)
@@ -42,6 +52,8 @@ textualElementInstance.setSectionOfDocument("Body")
 textualElementInstance.appendRun(runInstance)
 textualElementInstance.appendRun(runInstance2)
 textualElementInstance.appendRun(runInstance3)
+
+textualElementInstance2 = TextualElement(53, 1, "Body", [runInstance2, runInstance3])
 
 #Graphical Element Instance (Condensed since I allowed constructors to have parameters)
 graphicalElementInstance = GraphicalElement(0, 1, "Cell", "C:/Users/marti/Desktop/DS ROMS/Hacking/4998 - Pokemon - Platinum Version (v01) (U).sav")
@@ -65,4 +77,28 @@ tableInstance = Table([columnInstance],
                      [cellInstance0, cellInstance1, cellInstance2],
                       1, 3, 11,
                       "Body", "Unknown")
-print(tableInstance.XMLReturn(0))
+
+#Procedure Instance
+procedureInstance = Procedure([textualElementInstance],
+                              [graphicalElementInstance],
+                              "What Matters", 51, "Body", 1)
+
+#Adding all elements to the WordDocList
+WordDocList.append(textualElementInstance)
+WordDocList.append(tableInstance)
+WordDocList.append(graphicalElementInstance)
+WordDocList.append(procedureInstance)
+WordDocList.append(textualElementInstance2)
+
+#The following code should be implemented as part of the Interpreter or Parser when we need to save the XML
+xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n<WordDoc\nxmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\nxsi:noNamespaceSchemaLocation=\"DEO3.xsd\">\n"
+for element in WordDocList:
+    xml += element.XMLReturn(1)
+    xml += "\n"
+xml +="</WordDoc>"
+outputFile = open(vu.getOutputFileLocation() + "/" + vu.getOutputFileName(), "wt")
+outputFile.write(xml)
+outputFile.close()
+print(xml)
+
+    

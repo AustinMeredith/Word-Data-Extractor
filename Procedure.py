@@ -51,6 +51,12 @@ class Procedure():
 
     def extractProcedure(self, lineNumber):
         return True
+
+    def indent(self, indentAmt): #Used in XMLReturn returns spaces for indentation
+        indentation = ""
+        for x in range(indentAmt):
+            indentation += "  "
+        return indentation
     
     def XMLReturn(self, indentAmt): #Returns the XML Code for this object as a string
         xml = ""
@@ -58,16 +64,14 @@ class Procedure():
         xml += "<Procedure"
         xml += " ProcedureName=\"" + self.procedureName
         xml += "\" LineNumber=\"" + str(self.lineNumber)
-        xml += "\" SectionOfDocument" + self.sectionOfDocument
-        xml += "\" NumberOfSteps" + str(self.numberOfSteps) + "\">"
+        xml += "\" SectionOfDocument=\"" + self.sectionOfDocument
+        xml += "\" NumberOfSteps=\"" + str(self.numberOfSteps) + "\">"
         for text in self.steps:
             xml += "\n"
-            xml += self.indent(indentAmt + 1)
             xml += text.XMLReturn(indentAmt + 1)
-        for graphic in self.graphics
+        for graphic in self.graphics:
             xml += "\n"
-            xml += self.indent(indentAmt + 1)
-            xml += graphic.XMLReturn()
+            xml += graphic.XMLReturn(indentAmt + 1)
         xml += "\n"
         xml += self.indent(indentAmt)
         xml += "</Procedure>"
