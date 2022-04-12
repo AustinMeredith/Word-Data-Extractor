@@ -1,20 +1,17 @@
 from TextualElement import *
 from GraphicalElement import *
 
+
 class Procedure():
-    def __init__(self, stepList, graphicsList, nameString, lineInt, sectionString, numStepsInt):
-        self.steps = stepList
-        self.graphics = graphicsList
+    def __init__(self, elementList, nameString, lineInt, sectionString, numStepsInt):
+        self.elements = elementList
         self.procedureName = nameString
         self.lineNumber = lineInt
         self.sectionOfDocument = sectionString
         self.numberOfSteps = numStepsInt
-
-    def getSteps(self):
-        return self.steps
-
-    def getGraphics(self):
-        return self.graphics
+            
+    def getElements(self):
+        return self.elements
 
     def getProcedureName(self):
         return self.procedureName
@@ -28,11 +25,8 @@ class Procedure():
     def getNumberOfSteps(self):
         return self.numberOfSteps
 
-    def setSteps(self, stepsArg):
-        self.steps = stepsArg
-
-    def setGraphics(self, graphicsArg):
-        self.graphics = graphicsArg
+    def setElements(self, elementsArg):
+        self.elements = elementsArg
 
     def setProcedureName(self, procedureNameArg):
         self.procedureName = procedureNameArg
@@ -45,12 +39,9 @@ class Procedure():
 
     def setNumberOfSteps(self, numberOfStepsArg):
         self.numberOfSteps = numberOfStepsArg
-    
-    def identifyProcedure(self, lineNumber):
-        return True
 
-    def extractProcedure(self, lineNumber):
-        return True
+    def appendElement(self, elementArg):
+        self.elements.append(elementArg)
 
     def indent(self, indentAmt): #Used in XMLReturn returns spaces for indentation
         indentation = ""
@@ -66,12 +57,9 @@ class Procedure():
         xml += "\" LineNumber=\"" + str(self.lineNumber)
         xml += "\" SectionOfDocument=\"" + self.sectionOfDocument
         xml += "\" NumberOfSteps=\"" + str(self.numberOfSteps) + "\">"
-        for text in self.steps:
+        for element in self.elements:
             xml += "\n"
-            xml += text.XMLReturn(indentAmt + 1)
-        for graphic in self.graphics:
-            xml += "\n"
-            xml += graphic.XMLReturn(indentAmt + 1)
+            xml += element.XMLReturn(indentAmt + 1)
         xml += "\n"
         xml += self.indent(indentAmt)
         xml += "</Procedure>"
