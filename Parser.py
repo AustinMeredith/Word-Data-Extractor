@@ -1,5 +1,9 @@
 import docx
+import docx2txt as d2t
+import os
 from TextualElement import *
+from GraphicalElement import *
+
 #import GraphicalElement
 #import Table
 #import Row
@@ -174,10 +178,26 @@ class Parser():
                         if (run0.getFont() == self.findFont(run) and run0.getStyle() == self.findStyle(run) and run0.getBold() == self.findBold(run) and run0.getItalic() ==  self.findItalic(run) and run0.getUnderline() == self.findUnderline(run)):
                             run0.appendText(self.findText(run))
                         else:
-                            textualElementList[iteration].appendRun(Run(consecutiveRuns, self.findFont(run), self.findStyle(run), self.findBold(run), self.findItalic(run), self.findUnderline(run)))
+                            textualElementList[iteration].appendRun(Run(self.findText(run), self.findFont(run), self.findStyle(run), self.findBold(run), self.findItalic(run), self.findUnderline(run)))
                             numRuns += 1
                     else:
                         textualElementList[iteration].appendRun(Run(self.findText(run), self.findFont(run), self.findStyle(run), self.findBold(run), self.findItalic(run), self.findUnderline(run)))
                         numRuns += 1
                 iteration += 1
         return textualElementList
+    
+    def graphicsParse(self, inputFilePath, outputFileLocation):
+        self.extract_images(inputFilePath, outputFileLocation)
+        GraphicsList = []
+        iteration = 0
+        for file in os.listdir(outputFileLocation):
+            if file.endswith('.jpeg') or file.endswith('.png') or file.endswith('.gif') or file.endswith('.bmp'):
+                GraphicsList.append(GraphicalElement(iteration, outputFileLocation + file))
+                iteration += 1
+        return GraphicsList
+    
+    def extract_images(self, path_to_file, images_folder, get_text=False):
+        text = d2t.process(path_to_file, images_folder)
+        if(get_text):
+            return text
+    
