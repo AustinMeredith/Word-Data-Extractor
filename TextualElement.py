@@ -1,9 +1,9 @@
 from Run import *
 class TextualElement():
-    def __init__(self, lineInt, hfbInt, sectionString, runsList):
+    def __init__(self, lineInt, hfbInt, styleString, runsList):
         self.lineNumber = lineInt
         self.headerFooterBody = hfbInt
-        self.sectionOfDocument = sectionString
+        self.style = styleString
         self.runs = runsList
 
     def getLineNumber(self):
@@ -12,11 +12,17 @@ class TextualElement():
     def getHeaderFooterBody(self):
         return self.headerFooterBody
 
-    def getSectionOfDocument(self):
-        return self.sectionOfDocument
+    def getStyle(self):
+        return self.style
 
     def getRuns(self):
         return self.runs
+
+    def getRun(self, index):
+        if index > -1 and index < len(self.runs):
+            return self.runs[index]
+        else:
+            return None
 
     def setLineNumber(self, lineNumberArg):
         self.lineNumber = lineNumberArg
@@ -24,20 +30,14 @@ class TextualElement():
     def setHeaderFooterBody(self, headerFooterBodyArg):
         self.headerFooterBody = headerFooterBodyArg
 
-    def setSectionOfDocument(self, sectionOfDocumentArg):
-        self.sectionOfDocument = sectionOfDocumentArg
+    def setStyle(self, styleArg):
+        self.style = styleArg
     
     def setRuns(self, runsArg):
         self.runs = runsArg
 
     def appendRun(self, runArg):
         self.runs.append(runArg)
-
-    def identifyText(self, lineNumber):
-        return True
-
-    def extractText(self, lineNumber):
-        return True
     
     def indent(self, indentAmt): #Used in XMLReturn returns spaces for indentation
         indentation = ""
@@ -50,7 +50,7 @@ class TextualElement():
         xml += "<TextualElement"
         xml += " LineNumber=\"" + str(self.lineNumber)
         xml += "\" HeaderFooterBody=\"" + str(self.headerFooterBody)
-        xml += "\" SectionOfDocument=\"" + self.sectionOfDocument + "\">"
+        xml += "\" Style=\"" + self.style + "\">"
         for run in self.runs:
             xml += "\n"
             xml += self.indent(indentAmt + 1)
