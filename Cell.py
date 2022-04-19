@@ -2,18 +2,14 @@ from TextualElement import *
 from GraphicalElement import *
 
 class Cell():
-    def __init__(self, textList, graphicsList, tableString, columnInt, rowInt):
+    def __init__(self, textList, tableString, rowInt, columnInt):
         self.textualElements = textList
-        self.graphicalElements = graphicsList
         self.tableName = tableString
         self.column = columnInt
         self.row = rowInt
 
     def getTextualElements(self):
         return self.textualElements
-
-    def getGraphicalElements(self):
-        return self.graphicalElements
 
     def getTableName(self):
         return self.TableName
@@ -24,7 +20,7 @@ class Cell():
     def getColumn(self):
         return self.column
 
-    def setTextualElement(self, textualArg):
+    def setTextualElements(self, textualArg):
         self.textualElements = textualArg
 
     def setGraphicalElements(self, graphicsArg):
@@ -41,12 +37,6 @@ class Cell():
 
     def appendText(self, textualElement):
         self.textualElements.append(textualElement)
-
-    def appendGraphics(self, graphicalElement):
-        self.graphicalElements.append(graphicalElements)
-
-    def extractCell(self, lineNumber):
-        return True
     
     def indent(self, indentAmt): #Used in XMLReturn returns spaces for indentation
         indentation = ""
@@ -64,9 +54,6 @@ class Cell():
         for text in self.textualElements:
             xml += "\n"
             xml += text.XMLReturn(indentAmt + 1)
-        for graphic in self.graphicalElements:
-            xml += "\n"
-            xml += graphic.XMLReturn(indentAmt + 1)
         xml += "\n"
         xml += self.indent(indentAmt)
         xml += "</Cell>"

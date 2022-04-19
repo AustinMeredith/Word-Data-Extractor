@@ -3,20 +3,19 @@ from Row import *
 from Cell import *
 
 class Table():
-    def __init__(self, columnsList, rowsList, cellsList, numColumnsInt, numRowsInt, lineInt, sectionString, tableNameString):
+    def __init__(self, columnsList, rowsList, cellsList, numColumnsInt, numRowsInt, lineInt, tableNameString):
         self.columns = columnsList
         self.rows = rowsList
         self.cells = cellsList
         self.numberOfColumns = numColumnsInt
         self.numberOfRows = numRowsInt
         self.lineNumber = lineInt
-        self.sectionOfDocument = sectionString
         self.tableName = tableNameString
 
     def getColumns(self):
         return self.columns
 
-    def getRow(self):
+    def getRows(self):
         return self.rows
 
     def getCells(self):
@@ -30,9 +29,6 @@ class Table():
     
     def getLineNumber(self):
         return self.lineNumber
-
-    def getSectionOfDocument(self):
-        return self.sectionOfDocument
 
     def getTableName(self):
         return self.tableName
@@ -55,9 +51,6 @@ class Table():
     def setLineNumber(self, lineNumberArg):
         self.lineNumber = lineNumberArg
 
-    def setSectionOfDocument(self, sectionOfDocumentArg):
-        self.sectionOfDocument = sectionOfDocumentArg
-
     def setTableName(self, TableNameArg):
         self.tableName = TableNameArg
 
@@ -70,12 +63,6 @@ class Table():
 
     def appendCell(self, cell):
         self.cells.append(cell)
-        
-    def identifyTable(self, lineNumber):
-        return True
-
-    def extractTable(self, lineNumber):
-        return True
 
     def indent(self, indentAmt): #Used in XMLReturn returns spaces for indentation
         indentation = ""
@@ -89,7 +76,6 @@ class Table():
         xml += "<Table"
         xml += " TableName=\"" + self.tableName
         xml += "\" LineNumber=\"" + str(self.lineNumber)
-        xml += "\" SectionOfDocument=\"" + self.sectionOfDocument
         xml += "\" NumberOfRows=\"" + str(self.numberOfRows)
         xml += "\" NumberOfColumns=\"" + str(self.numberOfColumns) + "\">"
         for cell in self.cells:

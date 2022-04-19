@@ -57,5 +57,5 @@ class VariableUtility():
             return True
         else:
             return False
-    def EndProgram(self): #Unimplemented, as there is no need for it yet.
-        return True
+    def EndProgram(self): #Done by using quit function
+        quit()

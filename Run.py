@@ -1,5 +1,5 @@
 class Run():
-    def __init__(self, textString, boldBool, fontString, italicBool, styleString, underlineBool):
+    def __init__(self, textString, fontString, styleString, boldBool, italicBool, underlineBool):
         self.text = textString
         self.bold = boldBool
         self.font = fontString
@@ -43,6 +43,9 @@ class Run():
     def setUnderline(self, underlineArg):
         self.underline = underlineArg
 
+    def appendText(self, textArg):
+        self.text += textArg
+        
     def XMLReturn(self): #Returns the XML code as a string.
         xml = "<Run"
         xml += " Text=\"" + self.text + "\" Bold=\"" 
