@@ -47,7 +47,7 @@
   </xs:sequence>
 	<xs:attribute name="LineNumber" type="xs:integer"/>
 	<xs:attribute name="HeaderFooterBody" type="xs:integer"/>
-	<xs:attribute name="SectionOfDocument" type="xs:string"/>
+	<xs:attribute name="Style" type="xs:string"/>
 </xs:complexType>
 
 
@@ -99,7 +99,7 @@
 <xs:complexType name="Procedure">
   <xs:sequence>
     <xs:element name="TextualElement" type="TextualElement" maxOccurs="100" minOccurs="1"/>
-    <xs:element name="GraphicalElement" type="GraphicalElement" maxOccurs="100" minOccurs="0"/>
+    <xs:element name="Cell" type="Cell" maxOccurs="100" minOccurs="0"/>
   </xs:sequence>
   <xs:attribute name="ProcedureName" type="xs:string"/>
   <xs:attribute name="LineNumber" type="xs:integer"/>
