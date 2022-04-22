@@ -20,16 +20,57 @@ class ProcedureParser():
         self.Token0Index = -1
         self.Token1Index = -1
         
-    def generateTokens0(self, prePattern, postPattern):
-        for x in range(1, 100):
-            self.Tokens0.append(prePattern + str(x) + postPattern)
-        self.Token0 = self.Tokens0[0]
-
-    def generateTokens1(self, prePattern, postPattern):
-        for x in range(1, 100):
-            self.Tokens1.append(prePattern + str(x) + postPattern)
-        self.Token1 = self.Tokens1[0]
-            
+    def generateTokens0(self, prePattern, postPattern, numberingType):
+        if(postPattern == ""):
+            postPattern = ")\t" 
+        lowercase = "abcdefghijklmnopqrstuvwxyz"
+        romanNumeral = ["i", "ii", "iii", "iv", "v" , "vi", "vii", "viii", "ix", "x", "xi", "xii", "xiii", "xiv", "xv", "xvi", "xvii", "xviii", "xix", "xx", "xxi", "xxii", "xxiii", "xxiv", "xxv"]
+        if(numberingType == 0):
+            for x in range(1, 25):
+                self.Tokens0.append(prePattern + str(x) + postPattern)
+        elif(numberingType == 1):
+            for x in range(0, 25):
+                self.Tokens0.append(prePattern + str(lowercase[x]) + postPattern)
+        elif(numberingType == 2):
+            for x in range(0, 25):
+                self.Tokens0.append(prePattern + str(lowercase[x].upper()) + postPattern)
+        elif(numberingType == 3):
+            for x in range(0, 25):
+                self.Tokens0.append(prePattern + str(romanNumeral[x]) + postPattern)
+        elif(numberingType == 4):
+            for x in range(0, 25):
+                self.Tokens0.append(prePattern + str(romanNumeral[x].upper()) + postPattern)
+        else:
+            for x in range(1, 25):
+                self.Tokens0.append(prePattern + str(x) + postPattern)
+                
+    def generateTokens1(self, prePattern, postPattern, numberingType):
+        if(postPattern == ""):
+            postPattern = ")\t"
+        if(prePattern == ""):
+            prePattern = "\t"
+        lowercase = "abcdefghijklmnopqrstuvwxyz"
+        romanNumeral = ["i", "ii", "iii", "iv", "v" , "vi", "vii", "viii", "ix", "x", "xi", "xii", "xiii", "xiv", "xv", "xvi", "xvii", "xviii", "xix", "xx", "xxi", "xxii", "xxiii", "xxiv", "xxv"]
+        if(numberingType == 0):
+            for x in range(1, 25):
+                self.Tokens1.append(prePattern + str(x) + postPattern)
+        elif(numberingType == 1):
+            for x in range(0, 25):
+                self.Tokens1.append(prePattern + str(lowercase[x]) + postPattern)
+        elif(numberingType == 2):
+            for x in range(0, 25):
+                self.Tokens1.append(prePattern + str(lowercase[x].upper()) + postPattern)
+        elif(numberingType == 3):
+            for x in range(0, 25):
+                self.Tokens1.append(prePattern + str(romanNumeral[x]) + postPattern)
+        elif(numberingType == 4):
+            for x in range(0, 25):
+                self.Tokens1.append(prePattern + str(romanNumeral[x].upper()) + postPattern)
+        else:
+            for x in range(1, 25):
+                self.Tokens0.append(prePattern + str(x) + postPattern)
+                        
+                    
     def checkBeginsToken0(self, element, tokens):
         index = 0
         for token in tokens:
