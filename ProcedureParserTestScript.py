@@ -1,42 +1,43 @@
+from Parser import *
+from VariableUtility import *
+from ProcedureParser import *
 from docx2python import docx2python
 from docx2python.iterators import enum_at_depth
-from ProcedureParser import *
-'''
-    Tokens0 and Tokens1 in Assembly procedure (Actual numbered list) Tokens1 sublevel of Tokens0
-    Tokens2 and Tokens3 in t-u5-12-T3.docx
 
-    postPattern =  ")\\t\\t" for Tokens0
-    prePattern = "\\t" postPattern = ")\\t\\t" for Tokens1
-    postPattern = ".\\t" for Tokens2
-    prePattern = "\\t" postPattern = ".\\t" for Tokens3
-'''
+#using VariableUtility for its intended purpose
+
+vu = VariableUtility()
+vu.setOutputFileLocation("C:/Users/marti/Desktop/Word Data Extraction/4-20/OutputXML")
+vu.setOutputFileName("Results.xml")
+vu.setInputFilePath("C:/Users/marti/Desktop/Word Data Extraction/4-20/Test Docs/MyTest.docx")
+Parser = Parser(vu.getInputFilePath())
 ProcedureParser = ProcedureParser()
-ProcedureParser.generateTokens0("", ")\t\t")
+ProcedureParser.generateTokens0("", ")\t")
 ProcedureParser.generateTokens1("\t", ")\t\t")
-document = docx2python("C:/Users/marti/Desktop/Word Data Extraction/4-15/Order/TestDocs/Assembly Procedure-T1.docx")
+#ProcedureParser.generateTokens0("", ".   ")
+document = docx2python(vu.getInputFilePath())
+docHeader = document.header
+docFooter = document.footer
 docTables = document.body
-ProcedureParser.removeEmptyParagraphs(docTables)
-ProcedureParser.identifyProcedureStrings(docTables)
-for x in ProcedureParser.ProcedureStrings:
-    print(x)
-for x in ProcedureParser.SubProcedureStrings:
-    print(x)
-#for (i,j,k,l), paragraph in enum_at_depth(tables, 4):
-    #print(tables[i][j][k][l])
-#print(tables)
-'''Method for extracting procedures, though convoluted: use this to identify them in the document, then compare that against
-the extracted paragraphs in our class structure. Use that to decide which paragraphs to pull as procedures'''
+docTables = ProcedureParser.removeHeaderOrFooterParagraphs(docTables, docHeader)
+docTables = ProcedureParser.removeHeaderOrFooterParagraphs(docTables, docFooter)
+docTables = ProcedureParser.removeTabParagraphs(docTables)
+docTables = ProcedureParser.removeEmptyParagraphs(docTables)    
+structure = ProcedureParser.identifyDocumentStructure(docTables)
+ProcedureStringList = ProcedureParser.identifyProcedureStrings(docTables)
+tableList = Parser.tablesParse()
+paragraphList = Parser.paragraphsParse()
+graphicsList = Parser.graphicsParse(vu.getInputFilePath(), vu.getOutputFileLocation())
+WordDocList = tableList + paragraphList + graphicsList
+WordDocList = ProcedureParser.orderByDocumentStructure(paragraphList, graphicsList, tableList, structure)
+ProcedureParser.identifyProcedure(WordDocList, ProcedureStringList[0], ProcedureStringList[1])
 
-'''for token in Tokens0:
-    print(token)
-
-for token in Tokens1:
-    print(token)'''
-    
-'''for x in range(len(document.body)):
-    print(str(document.body[x]) + "\n")'''
-
-'''
-
-
-document.body[2][0][0][2]'''
+xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n<WordDoc\nxmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\nxsi:noNamespaceSchemaLocation=\"DEO3.xsd\">\n"
+for element in WordDocList:
+    xml += element.XMLReturn(1)
+    xml += "\n"
+xml +="</WordDoc>"
+print(xml)
+outputFile = open(vu.getOutputFileLocation() + "\\" + vu.getOutputFileName(), "wt")
+outputFile.write(xml)
+outputFile.close()

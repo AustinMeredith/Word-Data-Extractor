@@ -11,6 +11,7 @@ class Table():
         self.numberOfRows = numRowsInt
         self.lineNumber = lineInt
         self.tableName = tableNameString
+        self.procedureParsed = False
 
     def getColumns(self):
         return self.columns
@@ -21,6 +22,12 @@ class Table():
     def getCells(self):
         return self.cells
 
+    def getCell(self, row, column):
+        for cell in cells:
+            if cell.getRow() == row and cell.getColumn() == column:
+                return cell
+        return None
+    
     def getNumberOfColumns(self):
         return self.numberOfColumns
 
@@ -32,6 +39,9 @@ class Table():
 
     def getTableName(self):
         return self.tableName
+
+    def getProcedureParsed(self):
+        return self.procedureParsed
 
     def setColumns(self, columnsArg):
         self.columns = columnsArg
@@ -54,6 +64,8 @@ class Table():
     def setTableName(self, TableNameArg):
         self.tableName = TableNameArg
 
+    def setProcedureParsed(self):
+        self.procedureParsed = True
     #Identify and add collums rows and cells
     def appendColumn(self, column):
         self.columns.append(column)

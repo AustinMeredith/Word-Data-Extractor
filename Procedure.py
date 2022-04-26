@@ -3,11 +3,10 @@ from GraphicalElement import *
 
 
 class Procedure():
-    def __init__(self, elementList, nameString, lineInt, sectionString, numStepsInt):
+    def __init__(self, elementList, nameString, lineInt, numStepsInt):
         self.elements = elementList
         self.procedureName = nameString
         self.lineNumber = lineInt
-        self.sectionOfDocument = sectionString
         self.numberOfSteps = numStepsInt
             
     def getElements(self):
@@ -18,9 +17,6 @@ class Procedure():
     
     def getLineNumber(self):
         return self.lineNumber
-
-    def getSectionOfDocument(self):
-        return self.sectionOfDocument
 
     def getNumberOfSteps(self):
         return self.numberOfSteps
@@ -33,9 +29,6 @@ class Procedure():
         
     def setLineNumber(self, lineNumberArg):
         self.lineNumber = lineNumberArg
-
-    def setSectionOfDocument(self, sectionOfDocumentArg):
-        self.sectionOfDocument = sectionOfDocumentArg
 
     def setNumberOfSteps(self, numberOfStepsArg):
         self.numberOfSteps = numberOfStepsArg
@@ -55,7 +48,6 @@ class Procedure():
         xml += "<Procedure"
         xml += " ProcedureName=\"" + self.procedureName
         xml += "\" LineNumber=\"" + str(self.lineNumber)
-        xml += "\" SectionOfDocument=\"" + self.sectionOfDocument
         xml += "\" NumberOfSteps=\"" + str(self.numberOfSteps) + "\">"
         for element in self.elements:
             xml += "\n"

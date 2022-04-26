@@ -24,6 +24,13 @@ class TextualElement():
         else:
             return None
 
+    def getRunsText(self):
+        runText = ""
+        for run in self.runs:
+            runText += run.getText()
+        return runText
+        
+
     def setLineNumber(self, lineNumberArg):
         self.lineNumber = lineNumberArg
 

@@ -3,29 +3,90 @@
 #That's why it's necessary to remove hyperlinks.
 #Note 2 Text boxes, whether integrated into the text, or as inline shapes, python-docx can't detect those text boxes, and thus they aren't recorded as textual elements. Thus, it's necessary to remove text boxes.
 #Note 3 Certain characters that appear in Word are not compatable with the encoding of the XML output (UTF-8), and thus must be removed.
+#Note 4 I know that many of these methods could be significantly optimized compared to their current state, but time crunch meant I just had to make it functional.
 from docx2python.iterators import enum_at_depth
 from docx2python.iterators import enum_cells
+from TextualElement import *
+from Procedure import *
+from Table import *
 
 class ProcedureParser():
     def __init__(self):
         #Tokens1 sublevel of Token0
         self.Tokens0 = []
         self.Tokens1 = []
-        self.ProcedureStrings = []
-        self.SubProcedureStrings = []
+        self.Resets0 = []
+        self.Resets1 = []
+        self.Token0Index = -1
+        self.Token1Index = -1
         
-    def generateTokens0(self, prePattern, postPattern):
-        for x in range(100):
-            self.Tokens0.append(prePattern + str(x) + postPattern)
-
-    def generateTokens1(self, prePattern, postPattern):
-        for x in range(100):
-            self.Tokens1.append(prePattern + str(x) + postPattern)
-            
-    def checkBeginsToken(self, element, tokens):
+    def generateTokens0(self, prePattern, postPattern, numberingType):
+        if(postPattern == ""):
+            postPattern = ")\t" 
+        lowercase = "abcdefghijklmnopqrstuvwxyz"
+        romanNumeral = ["i", "ii", "iii", "iv", "v" , "vi", "vii", "viii", "ix", "x", "xi", "xii", "xiii", "xiv", "xv", "xvi", "xvii", "xviii", "xix", "xx", "xxi", "xxii", "xxiii", "xxiv", "xxv"]
+        if(numberingType == 0):
+            for x in range(1, 25):
+                self.Tokens0.append(prePattern + str(x) + postPattern)
+        elif(numberingType == 1):
+            for x in range(0, 25):
+                self.Tokens0.append(prePattern + str(lowercase[x]) + postPattern)
+        elif(numberingType == 2):
+            for x in range(0, 25):
+                self.Tokens0.append(prePattern + str(lowercase[x].upper()) + postPattern)
+        elif(numberingType == 3):
+            for x in range(0, 25):
+                self.Tokens0.append(prePattern + str(romanNumeral[x]) + postPattern)
+        elif(numberingType == 4):
+            for x in range(0, 25):
+                self.Tokens0.append(prePattern + str(romanNumeral[x].upper()) + postPattern)
+        else:
+            for x in range(1, 25):
+                self.Tokens0.append(prePattern + str(x) + postPattern)
+                
+    def generateTokens1(self, prePattern, postPattern, numberingType):
+        if(postPattern == ""):
+            postPattern = ")\t"
+        if(prePattern == ""):
+            prePattern = "\t"
+        lowercase = "abcdefghijklmnopqrstuvwxyz"
+        romanNumeral = ["i", "ii", "iii", "iv", "v" , "vi", "vii", "viii", "ix", "x", "xi", "xii", "xiii", "xiv", "xv", "xvi", "xvii", "xviii", "xix", "xx", "xxi", "xxii", "xxiii", "xxiv", "xxv"]
+        if(numberingType == 0):
+            for x in range(1, 25):
+                self.Tokens1.append(prePattern + str(x) + postPattern)
+        elif(numberingType == 1):
+            for x in range(0, 25):
+                self.Tokens1.append(prePattern + str(lowercase[x]) + postPattern)
+        elif(numberingType == 2):
+            for x in range(0, 25):
+                self.Tokens1.append(prePattern + str(lowercase[x].upper()) + postPattern)
+        elif(numberingType == 3):
+            for x in range(0, 25):
+                self.Tokens1.append(prePattern + str(romanNumeral[x]) + postPattern)
+        elif(numberingType == 4):
+            for x in range(0, 25):
+                self.Tokens1.append(prePattern + str(romanNumeral[x].upper()) + postPattern)
+        else:
+            for x in range(1, 25):
+                self.Tokens0.append(prePattern + str(x) + postPattern)
+                        
+                    
+    def checkBeginsToken0(self, element, tokens):
+        index = 0
         for token in tokens:
             if(element[0:len(token)] == token): #if run begins with token
+                self.Token0Index = index
                 return token
+            index += 1
+        return None
+
+    def checkBeginsToken1(self, element, tokens):
+        index = 0
+        for token in tokens:
+            if(element[0:len(token)] == token): #if run begins with token
+                self.Token1Index = index
+                return token
+            index += 1
         return None
     
     def identifyDocumentStructure(self, docTables):
@@ -39,6 +100,17 @@ class ProcedureParser():
                         structure.append("i")
                     elif(len(element3) > 0):
                         structure.append("x")
+        return structure
+
+    def identifyInternalDocumentStructure(self, WordDocList):
+        structure = []
+        for element in WordDocList:
+            if(isinstance(element, TextualElement)):
+                structure.append("x")
+            elif(isinstance(element, GraphicalElement)):
+                structure.append("i")
+            else:
+                structure.append("t")
         return structure
 
     def orderByDocumentStructure(self, TextList, GraphicsList, TableList, structure):
@@ -88,50 +160,170 @@ class ProcedureParser():
                 end = self.findSubstringLocation(docTables[i][j][k][l], "\">")
                 docTables[i][j][k][l] = (docTables[i][j][k][l][0:begin] + docTables[i][j][k][l][end + 2: len(docTables[i][j][k][l])]).replace("</a>", "")
         return docTables
+
+    def getTokenIndex(self, token, tokenList):
+        index = 0
+        for t in tokenList:
+            if t == token:
+                return index
+            index += 1
+        return -1
     
     def identifyProcedureStrings(self, document):
+        ProcedureStrings = []
+        SubProcedureStrings = []
+        resetIndex = 0
         for (i, j, k, l), paragraph in enum_at_depth(document, 4):
-            checkedToken = self.checkBeginsToken(document[i][j][k][l], self.Tokens0)
-            if not(checkedToken is None):
+            checkedToken = self.checkBeginsToken0(document[i][j][k][l], self.Tokens0)
+            if not(checkedToken is None) and checkedToken == self.Tokens0[self.Token0Index]:
                 s = str(document[i][j][k][l])
                 s = s.replace(checkedToken, "", 1)
-                self.ProcedureStrings.append(s)
+                ProcedureStrings.append(s)
+                resetIndex += 1
+                if len(self.Tokens1) > 0:
+                    SubProcedureStrings = SubProcedureStrings + self.identifySubProcedureStrings(document, i, j, k, l + 1)
+
+            if not(checkedToken is None) and self.Token0Index < resetIndex:
+                self.Resets0.append(resetIndex)
+                resetIndex = 0
             
-        for (i, j, k, l), paragraph in enum_at_depth(document, 4):
-            checkedToken = self.checkBeginsToken(document[i][j][k][l], self.Tokens1)
-            if not(checkedToken is None):
+        self.Token0Index = -1
+        self.Token1Index = -1
+        return[ProcedureStrings, SubProcedureStrings]
+    
+    def identifySubProcedureStrings(self, document, i, j, k, l):
+        SubProcedureStrings = []
+        resetIndex = 0
+        while l < len(document[i][j][k]):
+            checkedToken = self.checkBeginsToken1(document[i][j][k][l], self.Tokens1)
+            if self.isSubProcedureString(document[i][j][k][l]):
                 s = str(document[i][j][k][l])
                 s = s.replace(checkedToken, "", 1)
-                self.ProcedureStrings.append(s)
+                SubProcedureStrings.append(s)
+                resetIndex += 1
+            if l == len(document[i][j][k]) - 1:
+                self.Resets1.append(resetIndex)
+            checkedToken = self.checkBeginsToken0(document[i][j][k][l], self.Tokens0)
+            if (not(checkedToken is None) and checkedToken == self.Tokens0[self.Token0Index]):
+                self.Resets1.append(resetIndex)
+                break
+            l += 1
+        self.Tokens1Index = -1
+        return SubProcedureStrings
+
+    def identifyTableProcedureStrings(self, document):
+        ProcedureStrings = []
+        for (i, j, k, l), paragraph in enum_at_depth(document, 4):
+            checkedToken = self.checkBeginsToken0(document[i][j][k][l], self.Tokens0)
+            if not(checkedToken is None) and checkedToken == self.Tokens0[self.Token0Index]:
+                s = str(document[i][j][k][l])
+                s = s.replace(checkedToken, "", 1)
+                ProcedureStrings.append(s)
+            elif not(checkedToken is None) and checkedToken != self.Tokens0[self.Token0Index]:
+                break
+        self.Tokens0Index = -1
+        return ProcedureStrings
+
+    def identifyTableProcedure(self, WordDocList, ProcedureStrings):
+        begin = -1
+        end = -1
+        lastProcedureStringIndex = -1
+        index = 0
+        if len(ProcedureStrings) > 0:
+            while index < len(WordDocList) and begin == -1:
+                if(isinstance(WordDocList[index], Table) and not(WordDocList[index].getProcedureParsed())):
+                    WordDocList[index].setProcedureParsed()
+                    table = WordDocList[index]
+                    jndex = 0
+                    while jndex < len(WordDocList[index].getCells()) and begin == -1:
+                        if len(WordDocList[index].getCells()[jndex].getTextualElements()) > 0 and WordDocList[index].getCells()[jndex].getTextualElements()[0].getRunsText() == ProcedureStrings[0]:
+                            begin = jndex
+                            end = jndex + table.getNumberOfColumns()
+                        jndex += 1
+                    while jndex < len(WordDocList[index].getCells()):
+                        if len(WordDocList[index].getCells()[jndex].getTextualElements()) > 0 and self.indexProcedureString(WordDocList[index].getCells()[jndex].getTextualElements()[0].getRunsText(), ProcedureStrings) > -1:
+                            end = jndex + table.getNumberOfColumns()
+                            lastProcedureStringIndex = self.indexProcedureString(WordDocList[index].getCells()[jndex].getTextualElements()[0].getRunsText(), ProcedureStrings)
+                        jndex += 1
+                index += 1
+            if(begin > -1 and end > -1):
+                self.extractTableProcedure(WordDocList, begin, end, index - 1, len(ProcedureStrings))
+                self.removeFoundProcedureStrings(lastProcedureStringIndex, ProcedureStrings)
+                return True
+            else:
+                return False
+        else:
+            return False
+
+    def indexProcedureString(self, string, ProcedureStrings):
+        for x in range(len(ProcedureStrings) - 1):
+            if string == ProcedureStrings[x]:
+                return x
+        return -1
+
+    def removeFoundProcedureStrings(self, index, ProcedureStrings):
+        for x in range(index + 1):
+            ProcedureStrings.pop(0)
+            
+    def extractTableProcedure(self, WordDocList, begin, end, index, steps):
+        procedure = Procedure([],"",0, 0) #procedure instance
+        procedure.setProcedureName(WordDocList[index].getCells()[begin].getTextualElements()[0].getRunsText())
+        procedure.setLineNumber(WordDocList[index].getLineNumber())
+        procedure.setNumberOfSteps(steps)
+        for x in range(begin, end): #iterate through the elements that belong to the procedure 
+            procedure.appendElement(WordDocList[index].getCells()[x]) #append the element at spot index to the procedure and remove it from the list.
+        WordDocList.insert(index + 1, procedure) #add the procedure to the WordDocList
+        return True
+    
+    def isSubProcedureString(self, string):
+        checkedToken = self.checkBeginsToken1(string, self.Tokens1)
+        if not(checkedToken is None) and checkedToken != self.Tokens0[self.Token0Index] and checkedToken == self.Tokens1[self.Token1Index]:
+            return True
+        else:
+            return False
         
-        '''begin = -1
+    def identifyProcedure(self, WordDocList, ProcedureStrings, SubProcedureStrings):
+        begin = -1
         end = -1
         index = 0
-        while(index < len(WordDocList) and begin == -1):                                            #iterate through the WordDocList until begin found or end of list reached
-            if(self.checkBeginsToken(WordDocList[index])):                                          #if textual element begins with token
-                begin = index - 1                                                                   #set procedure beginning to that index
-                while(not(isinstance(WordDocList[begin], TextualElement) and begin >= 0)):          #checking if there is a previous textual element, if so likely the title of the procedure
-                    begin = begin - 1
-            index += 1
-        if(begin == -1):                                                                            #if no begin was found return False there was no procedure
-            return False
-        while(index < len(WordDocList) and end == -1):                                              #iterate through the WordDocList until end found
-            if(not(self.checkBeginsToken(WordDocList[index]))):                                         #if the TextualElement doesn't begin with a token
-                end = index                                                                                 #the end is that TextualElement
-            index += 1
-        if(end == -1):                                                                              #if no end to the procedure was found it is the end of the document
-            end = len(WordDocList)
-        self.extractProcedure(WordDocList, begin, end)                                              #extractProcedure with the discovered beginning and end
-        return True'''
-
+        Resets1Index = 0
+        print(ProcedureStrings)
+        print(SubProcedureStrings)
+        x = 0
+        while x < len(self.Resets0):
+            while(index < len(WordDocList) and len(ProcedureStrings) > 0):
+                if isinstance(WordDocList[index], TextualElement) and WordDocList[index].getRunsText() == ProcedureStrings[0]:
+                    begin = index
+                    Resets1Index = 0
+                    y = 0
+                    while(index < len(WordDocList) and y < self.Resets0[x]):
+                        if isinstance(WordDocList[index], TextualElement) and WordDocList[index].getRunsText() == ProcedureStrings[0]:
+                            ProcedureStrings.pop(0)
+                            y += 1
+                            z = 0
+                            while(index < len(WordDocList) and z < self.Resets1[Resets1Index]):
+                                if isinstance(WordDocList[index], TextualElement) and WordDocList[index].getRunsText() == SubProcedureStrings[0]:
+                                    SubProcedureStrings.pop(0)
+                                    z += 1
+                                index += 1
+                        index += 1
+                        Resets1Index += 1
+                    if self.Resets1[Resets1Index - 1] > 0:
+                        index = index - 1
+                    end = index
+                    print(begin, end)
+                    index = self.extractProcedure(WordDocList, begin, end)
+                elif (isinstance(WordDocList[index], Table)):
+                    self.identifyTableProcedure(WordDocList, ProcedureStrings)
+                index += 1
+            x += 1
+        
     def extractProcedure(self, WordDocList, begin, end):
-        procedure = Procedure([],"",0,"", 0) #procedure instance
+        procedure = Procedure([],"",0, 0) #procedure instance
         procedure.setProcedureName(WordDocList[begin].getRuns()[0].getText())
         procedure.setLineNumber(WordDocList[begin].getLineNumber())
-        procedure.setSectionOfDocument(WordDocList[begin].getSectionOfDocument())
         procedure.setNumberOfSteps(end - begin)
-        for x in range(end - begin): #iterate through the elements that belong to the procedure
-            print(WordDocList[begin].getRuns()[0].getText())   
+        for x in range(end - begin): #iterate through the elements that belong to the procedure 
             procedure.appendElement(WordDocList.pop(begin)) #append the element at spot index to the procedure and remove it from the list.
         WordDocList.insert(begin, procedure) #add the procedure to the WordDocList
-        return True
+        return begin
