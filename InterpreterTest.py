@@ -1,4 +1,4 @@
-from Interpreterv5 import *
+from Interpreter import *
 
 
 
