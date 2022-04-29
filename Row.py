@@ -1,3 +1,4 @@
+#This file was committed by Mason Lanham
 class Row():
     def __init__(self, tableString, rowString, cellsInt):
         self.tableName = tableString

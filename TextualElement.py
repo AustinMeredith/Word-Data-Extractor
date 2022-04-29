@@ -1,3 +1,4 @@
+#This file was committed by Mason Lanham
 from Run import *
 class TextualElement():
     def __init__(self, lineInt, hfbInt, styleString, runsList):

@@ -1,9 +1,10 @@
-#Note 1 the removeHyperLinks method removes the tags surrounding hyperlinks in the list provided by docx2pyton.document.body, but leaves the text that the hyperlink was associated with.
-#The problem lies in that python-docx can't see hyperlinks at all, so when parsing the document with the Parser class (which uses python-docx) those hyperlinks are invisible, and thus aren't recorded as textual elements.
-#That's why it's necessary to remove hyperlinks.
+#This file was committed by Mason Lanham
+
+#Note 1 There is a problem regarding hyperlinks in that Python-docx can't see hyperlinks at all, so when parsing the document with the Parser class (which uses Python-docx) those hyperlinks are invisible,
+#and thus aren't recorded as textual elements. That's why it's necessary to remove hyperlinks from the document.
 #Note 2 Text boxes, whether integrated into the text, or as inline shapes, python-docx can't detect those text boxes, and thus they aren't recorded as textual elements. Thus, it's necessary to remove text boxes.
-#Note 3 Certain characters that appear in Word are not compatable with the encoding of the XML output (UTF-8), and thus must be removed.
-#Note 4 I know that many of these methods could be significantly optimized compared to their current state, but time crunch meant I just had to make it functional.
+#Note 3 Certain characters that can appear in Word are not compatable with the encoding of the XML output (UTF-8), and thus must be removed.
+
 from docx2python.iterators import enum_at_depth
 from docx2python.iterators import enum_cells
 from TextualElement import *
@@ -12,7 +13,6 @@ from Table import *
 
 class ProcedureParser():
     def __init__(self):
-        #Tokens1 sublevel of Token0
         self.Tokens0 = []
         self.Tokens1 = []
         self.Resets0 = []
@@ -20,9 +20,7 @@ class ProcedureParser():
         self.Token0Index = -1
         self.Token1Index = -1
         
-    def generateTokens0(self, prePattern, postPattern, numberingType):
-        if(postPattern == ""):
-            postPattern = ")\t" 
+    def generateTokens0(self, prePattern, postPattern, numberingType): #Method generates the tokens that are used to identify procedures
         lowercase = "abcdefghijklmnopqrstuvwxyz"
         romanNumeral = ["i", "ii", "iii", "iv", "v" , "vi", "vii", "viii", "ix", "x", "xi", "xii", "xiii", "xiv", "xv", "xvi", "xvii", "xviii", "xix", "xx", "xxi", "xxii", "xxiii", "xxiv", "xxv"]
         if(numberingType == 0):
@@ -44,11 +42,7 @@ class ProcedureParser():
             for x in range(1, 25):
                 self.Tokens0.append(prePattern + str(x) + postPattern)
                 
-    def generateTokens1(self, prePattern, postPattern, numberingType):
-        if(postPattern == ""):
-            postPattern = ")\t"
-        if(prePattern == ""):
-            prePattern = "\t"
+    def generateTokens1(self, prePattern, postPattern, numberingType): #Method generates the tokens that are used to identify sub-procedures
         lowercase = "abcdefghijklmnopqrstuvwxyz"
         romanNumeral = ["i", "ii", "iii", "iv", "v" , "vi", "vii", "viii", "ix", "x", "xi", "xii", "xiii", "xiv", "xv", "xvi", "xvii", "xviii", "xix", "xx", "xxi", "xxii", "xxiii", "xxiv", "xxv"]
         if(numberingType == 0):
@@ -69,27 +63,8 @@ class ProcedureParser():
         else:
             for x in range(1, 25):
                 self.Tokens0.append(prePattern + str(x) + postPattern)
-                        
-                    
-    def checkBeginsToken0(self, element, tokens):
-        index = 0
-        for token in tokens:
-            if(element[0:len(token)] == token): #if run begins with token
-                self.Token0Index = index
-                return token
-            index += 1
-        return None
-
-    def checkBeginsToken1(self, element, tokens):
-        index = 0
-        for token in tokens:
-            if(element[0:len(token)] == token): #if run begins with token
-                self.Token1Index = index
-                return token
-            index += 1
-        return None
     
-    def identifyDocumentStructure(self, docTables):
+    def identifyDocumentStructure(self, docTables): #Method identifies the Word document structure from the 4-dimenstional array given by docx2python
         structure = []
         for element0 in docTables:
             if(len(element0) > 1):
@@ -102,7 +77,7 @@ class ProcedureParser():
                         structure.append("x")
         return structure
 
-    def identifyInternalDocumentStructure(self, WordDocList):
+    def identifyInternalDocumentStructure(self, WordDocList): #Method identifies the internal structure of the WordDocList array of objects
         structure = []
         for element in WordDocList:
             if(isinstance(element, TextualElement)):
@@ -113,7 +88,7 @@ class ProcedureParser():
                 structure.append("t")
         return structure
 
-    def orderByDocumentStructure(self, TextList, GraphicsList, TableList, structure):
+    def orderByDocumentStructure(self, TextList, GraphicsList, TableList, structure): #Method reorders the WordDocList array of objects to match the Word document structure identified in identifyDocumentStructure(docTables) method.
         orderedWordDocList = []
         iteration = 0
         for part in structure:
@@ -127,49 +102,43 @@ class ProcedureParser():
             iteration += 1
         return orderedWordDocList
     
-    def removeHeaderOrFooterParagraphs(self, docTables, docHeaderOrFooter):
+    def removeHeaderOrFooterParagraphs(self, docTables, docHeaderOrFooter): #Method removes header and footer paragraphs from the 4-dimenstional array given by docx2python
         for (i, j, k, l), paragraph in enum_at_depth(docTables, 4):
             for (i, j, k, l), paragraph in enum_at_depth(docHeaderOrFooter, 4):
                 if docTables[i][j][k][l] == docHeaderOrFooter[i][j][k][l]:
                     docTables[i][j][k][l] == ""
         return docTables
 
-    def removeEmptyParagraphs(self, docTables):
+    def removeEmptyParagraphs(self, docTables): #Method removes empty paragraphs from the 4-dimenstional array given by docx2python
         for (i, j, k), cell in enum_cells(docTables):
             docTables[i][j][k] = [x for x in cell if x]
         return docTables
 
-    def removeTabParagraphs(self, docTables):
+    def removeTabParagraphs(self, docTables): #Method removes tab paragraphs (paragraphs composed of tabs) from the 4-dimenstional array given by docx2python
         for (i, j, k, l), paragraph in enum_at_depth(docTables, 4):
             if docTables[i][j][k][l] == "\t" or docTables[i][j][k][l] == "\t\t":
                 docTables[i][j][k][l] = ""
         return docTables
-                
-    def findSubstringLocation(self, string, substring):
-        for x in range(len(string) - len(substring) + 1):
-            if string[x:x + len(substring)] == substring:
-                return x
-        return -1
-        
-    def removeHyperLinks(self, docTables): #removes the hyperlink tags, but not the text itself. See Note 1
-        begin = 0
-        end = 0
-        for (i, j, k, l), paragraph in enum_at_depth(docTables, 4):
-            if ("<a href=" in docTables[i][j][k][l]) and ("</a>" in docTables[i][j][k][l]):
-                begin = self.findSubstringLocation(docTables[i][j][k][l], "<a href=")
-                end = self.findSubstringLocation(docTables[i][j][k][l], "\">")
-                docTables[i][j][k][l] = (docTables[i][j][k][l][0:begin] + docTables[i][j][k][l][end + 2: len(docTables[i][j][k][l])]).replace("</a>", "")
-        return docTables
-
-    def getTokenIndex(self, token, tokenList):
+                        
+    def checkBeginsToken0(self, element, tokens): #Method checks if the element begins with a procedure token
         index = 0
-        for t in tokenList:
-            if t == token:
-                return index
+        for token in tokens:
+            if(element[0:len(token)] == token):
+                self.Token0Index = index
+                return token
             index += 1
-        return -1
+        return None
+
+    def checkBeginsToken1(self, element, tokens): #Method checks if the element begins with a sub-procedure token
+        index = 0
+        for token in tokens:
+            if(element[0:len(token)] == token):
+                self.Token1Index = index
+                return token
+            index += 1
+        return None
     
-    def identifyProcedureStrings(self, document):
+    def identifyProcedureStrings(self, document): #Method identifies procedure strings and sub-procedure strings in the 4-dimenstional array given by docx2python
         ProcedureStrings = []
         SubProcedureStrings = []
         resetIndex = 0
@@ -191,7 +160,7 @@ class ProcedureParser():
         self.Token1Index = -1
         return[ProcedureStrings, SubProcedureStrings]
     
-    def identifySubProcedureStrings(self, document, i, j, k, l):
+    def identifySubProcedureStrings(self, document, i, j, k, l): #Method identifies sub-procedure strings in the 4-dimenstional array given by docx2python
         SubProcedureStrings = []
         resetIndex = 0
         while l < len(document[i][j][k]):
@@ -211,7 +180,7 @@ class ProcedureParser():
         self.Tokens1Index = -1
         return SubProcedureStrings
 
-    def identifyTableProcedureStrings(self, document):
+    def identifyTableProcedureStrings(self, document): #Method identifies procedure strings in the 4-dimenstional array given by docx2python
         ProcedureStrings = []
         for (i, j, k, l), paragraph in enum_at_depth(document, 4):
             checkedToken = self.checkBeginsToken0(document[i][j][k][l], self.Tokens0)
@@ -224,7 +193,7 @@ class ProcedureParser():
         self.Tokens0Index = -1
         return ProcedureStrings
 
-    def identifyTableProcedure(self, WordDocList, ProcedureStrings):
+    def identifyTableProcedure(self, WordDocList, ProcedureStrings): #Method identifies and extract procedures contained within tables in the WordDocList array of objects
         begin = -1
         end = -1
         lastProcedureStringIndex = -1
@@ -255,40 +224,38 @@ class ProcedureParser():
         else:
             return False
 
-    def indexProcedureString(self, string, ProcedureStrings):
+    def indexProcedureString(self, string, ProcedureStrings): #Method used by identifyTableProcedure(WordDocList, String[]) to identify the index in the procedure string list a particular string is at.
         for x in range(len(ProcedureStrings) - 1):
             if string == ProcedureStrings[x]:
                 return x
         return -1
 
-    def removeFoundProcedureStrings(self, index, ProcedureStrings):
+    def removeFoundProcedureStrings(self, index, ProcedureStrings): #Method used by identifyTableProcedure(WordDocList, String[]) to remove the procedure strings that have already been found from the procedure string list
         for x in range(index + 1):
             ProcedureStrings.pop(0)
             
-    def extractTableProcedure(self, WordDocList, begin, end, index, steps):
+    def extractTableProcedure(self, WordDocList, begin, end, index, steps): #Method to extract the cells of a particular procedure contained within a table and append that to the WordDocList array of objects
         procedure = Procedure([],"",0, 0) #procedure instance
         procedure.setProcedureName(WordDocList[index].getCells()[begin].getTextualElements()[0].getRunsText())
         procedure.setLineNumber(WordDocList[index].getLineNumber())
         procedure.setNumberOfSteps(steps)
-        for x in range(begin, end): #iterate through the elements that belong to the procedure 
-            procedure.appendElement(WordDocList[index].getCells()[x]) #append the element at spot index to the procedure and remove it from the list.
+        for x in range(begin, end): #iterate through the objects that belong to the procedure 
+            procedure.appendElement(WordDocList[index].getCells()[x]) #append the object at spot index to the procedure and remove it from the list.
         WordDocList.insert(index + 1, procedure) #add the procedure to the WordDocList
         return True
     
-    def isSubProcedureString(self, string):
+    def isSubProcedureString(self, string): #Method identifies if a particular string is a sub-procedure string
         checkedToken = self.checkBeginsToken1(string, self.Tokens1)
         if not(checkedToken is None) and checkedToken != self.Tokens0[self.Token0Index] and checkedToken == self.Tokens1[self.Token1Index]:
             return True
         else:
             return False
         
-    def identifyProcedure(self, WordDocList, ProcedureStrings, SubProcedureStrings):
+    def identifyProcedure(self, WordDocList, ProcedureStrings, SubProcedureStrings): #Method identifies and extracts procedures
         begin = -1
         end = -1
         index = 0
         Resets1Index = 0
-        print(ProcedureStrings)
-        print(SubProcedureStrings)
         x = 0
         while x < len(self.Resets0):
             while(index < len(WordDocList) and len(ProcedureStrings) > 0):
@@ -297,33 +264,31 @@ class ProcedureParser():
                     Resets1Index = 0
                     y = 0
                     while(index < len(WordDocList) and y < self.Resets0[x]):
-                        if isinstance(WordDocList[index], TextualElement) and WordDocList[index].getRunsText() == ProcedureStrings[0]:
+                        if isinstance(WordDocList[index], TextualElement) and bool(ProcedureStrings) and WordDocList[index].getRunsText() == ProcedureStrings[0]:
                             ProcedureStrings.pop(0)
                             y += 1
                             z = 0
-                            while(index < len(WordDocList) and z < self.Resets1[Resets1Index]):
+                            while(index < len(WordDocList) and bool(self.Resets1) and z < self.Resets1[Resets1Index]):
                                 if isinstance(WordDocList[index], TextualElement) and WordDocList[index].getRunsText() == SubProcedureStrings[0]:
                                     SubProcedureStrings.pop(0)
                                     z += 1
                                 index += 1
                         index += 1
                         Resets1Index += 1
-                    if self.Resets1[Resets1Index - 1] > 0:
-                        index = index - 1
+                    index = index - 1
                     end = index
-                    print(begin, end)
                     index = self.extractProcedure(WordDocList, begin, end)
                 elif (isinstance(WordDocList[index], Table)):
                     self.identifyTableProcedure(WordDocList, ProcedureStrings)
                 index += 1
             x += 1
         
-    def extractProcedure(self, WordDocList, begin, end):
+    def extractProcedure(self, WordDocList, begin, end): #Method extracts the objects that make up a procedure of TextualElements (can include other elements as well)
         procedure = Procedure([],"",0, 0) #procedure instance
         procedure.setProcedureName(WordDocList[begin].getRuns()[0].getText())
         procedure.setLineNumber(WordDocList[begin].getLineNumber())
         procedure.setNumberOfSteps(end - begin)
-        for x in range(end - begin): #iterate through the elements that belong to the procedure 
-            procedure.appendElement(WordDocList.pop(begin)) #append the element at spot index to the procedure and remove it from the list.
+        for x in range(end - begin): #iterate through the objects that belong to the procedure 
+            procedure.appendElement(WordDocList.pop(begin)) #append the object at spot index to the procedure and remove it from the list.
         WordDocList.insert(begin, procedure) #add the procedure to the WordDocList
         return begin
