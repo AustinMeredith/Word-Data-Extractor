@@ -1,3 +1,4 @@
+#This file was committed by Mason Lanham
 class GraphicalElement():
     def __init__(self, lineInt, pathString):
         self.lineNumber = lineInt

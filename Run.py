@@ -1,3 +1,4 @@
+#This file was committed by Mason Lanham
 class Run():
     def __init__(self, textString, fontString, styleString, boldBool, italicBool, underlineBool):
         self.text = textString

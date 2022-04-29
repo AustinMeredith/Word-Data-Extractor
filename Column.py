@@ -1,3 +1,4 @@
+#This file was committed by Mason Lanham
 class Column():
     def __init__(self, tableString, columnString, cellsInt):
         self.tableName = tableString

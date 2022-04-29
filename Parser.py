@@ -1,3 +1,6 @@
+#This file has code committed by Luis Carrillo, David Garcia, Mason Lanham, and Chris Mendoza. Specific sections are commented to show who they were committed by.
+
+#The following section was committed by Luis Carrillo and Mason Lanham
 import docx
 import docx2txt as d2t
 import os
@@ -8,9 +11,9 @@ from Cell import *
 from Row import *
 from Column import *
 
+#The following section was committed by Luis Carrillo and Mason Lanham
 class Parser():
     def __init__(self, docName):
-        #Replace with filepath for whatever document
         self.doc = docx.Document(docName)
         self.all_paras = self.doc.paragraphs
         self.all_tables = self.doc.tables
@@ -25,6 +28,7 @@ class Parser():
 
 # Text Methods -------------------------------------------------------------
 
+#The following section was committed by Luis Carrillo
     def findHBF(self, para):
         headerParagraphs = self.header.paragraphs + self.firstPageHeader.paragraphs
         for headerPara in headerParagraphs:
@@ -36,26 +40,28 @@ class Parser():
                 return 2
         return 0
 
+#The following section was commmitted by Luis Carrillo
     def findRuns(self, para):
         runsArray = []
         for run in para.runs:
             runsArray.append(run.text)
         return runsArray
 
-#def findSection(para):
-
 #Run Methods -----------------------------------------------------------
 
+#The following section was committed by Luis Carrillo
     def findText(self, run):
         runText = run.text
         return runText
-    
+
+#The following section was committed by Luis Carrillo
     def findBold(self, run):
         if run.bold:
            return bool(True)
         else:
            return bool(False)
 
+#The following section was committed by Mason Lanham
     def findFont(self, run):
         if not(run.font.name is None):
             return run.font.name
@@ -64,18 +70,21 @@ class Parser():
         else:
             return "Unknown"
 
+#The following section was committed by Luis Carrillo
     def findItalic(self, run):
         if run.italic:
             return bool(True)
         else:
             return bool(False)
-
+        
+#The following section was committed by Mason Lanham
     def findStyle(self, run):
         if not(run.style.name is None):
             return run.style.name
         else:
             return "Unknown"
 
+#The following section was committed by Luis Carrillo
     def findUnderline(self, run):
         if run.underline:
             return bool(True)
@@ -84,6 +93,7 @@ class Parser():
 
 #Table Methods ---------------------------------------------------------
 
+#The following section was committed by Luis Carrillo
     def findColumnsList(self, table):
         columnList = []
         columnNum = 0
@@ -94,6 +104,7 @@ class Parser():
             columnNum += 1
         return columnList
 
+#The following section was committed by Luis Carrillo
     def findRowsList(self, table):
         rowList = []
         rowNum = 0
@@ -103,8 +114,9 @@ class Parser():
             rowList[rowNum].setRowName(rowName)
             rowNum += 1
         return rowList 
- 
-    def findCellsList(self, table):
+
+#The following section was committed by Mason Lanham and Chris Mendoza
+    def findCellsList(self, table): #Method returns a list of Cell objects that make up the table passed to it.
         cellsList = []
         tableName = self.findTableName(table)
         i = 0
@@ -134,20 +146,22 @@ class Parser():
                 iteration += 1
             i += 1
         return cellsList
+
+#The following section was committed by Luis Carrillo
     def findNumOfColumns(self, table):
         numOfColumns = 0
         for column in table.columns:
             numOfColumns += 1
         return numOfColumns
 
+#The following section was committed by Luis Carrillo
     def findNumOfRows(self, table):
         numOfRows = 0
         for row in table.rows:
             numOfRows += 1
         return numOfRows
 
-#def findLineNumber
-    
+#The following section was committed by Luis Carrillo    
     def findTableName(self, table):
         tableName = ""
         if table.rows[0].cells[0].text and table.rows[0].cells[0].text.strip():
@@ -158,6 +172,7 @@ class Parser():
 
 #Row Methods -----------------------------------------------------------
 
+#The following section was committed by Luis Carrillo
     def findRowString(self, row):
         rowString = ""
         for cell in row.cells:
@@ -166,9 +181,11 @@ class Parser():
                 rowString += " "
         return rowString
 
+#The following section was committed by Luis Carrillo
     def findTable(self, array):
         return array.table
-    
+
+#The following section was committed by Luis Carrillo    
     def findNumOfCells(self, array):
         cellCount = 0
         for cell in array.cells:
@@ -178,6 +195,7 @@ class Parser():
 
 #Cell Methods -----------------------------------------------------------------
 
+#The following section was committed by Luis Carrillo
     def c_findText(self, cell):
         cellText = ""
         for para in cell.paras:
@@ -186,7 +204,8 @@ class Parser():
             cellText = "_"
         return cellText
     
-    def tablesParse(self):
+#The following section was committed by Mason Lanham and Chris Mendoza    
+    def tablesParse(self): #Method returns a list of table objects containing all tables in the Word document
         tableList = []
         iteration = 0
         for table in self.all_tables:
@@ -198,8 +217,9 @@ class Parser():
             tableList[iteration].setNumberOfRows(tableList[iteration].getColumns()[0].getNumberOfCells())
             iteration += 1
         return tableList
-    
-    def paragraphsParse(self):
+
+#The following section was committed by Luis Carillo and Mason Lanham
+    def paragraphsParse(self): #Method returns a list of TextualElement objects containing all paragraphs not contained within tables in the Word document
         textualElementList = []
         iteration = 0
         for para in self.all_paras:
@@ -219,8 +239,9 @@ class Parser():
                         numRuns += 1
                 iteration += 1
         return textualElementList
-    
-    def graphicsParse(self, inputFilePath, outputFileLocation):
+
+#The following section was committed by David Garcia and Mason Lanham
+    def graphicsParse(self, inputFilePath, outputFileLocation): #Method returns a list of GraphicalElement objects containing all graphics in the Word document
         self.extract_images(inputFilePath, outputFileLocation)
         GraphicsList = []
         iteration = 0
@@ -229,7 +250,8 @@ class Parser():
                 GraphicsList.append(GraphicalElement(iteration, outputFileLocation + file))
                 iteration += 1
         return GraphicsList
-    
+
+#The following section was committed by David Garcia 
     def extract_images(self, path_to_file, images_folder, get_text=False):
         text = d2t.process(path_to_file, images_folder)
         if(get_text):

@@ -1,3 +1,5 @@
+#This file was committed by Mason Lanham
+
 #Purpose is to handle the string variables and provide general utilities to the program
 import os.path #module handles file paths in the os
 class VariableUtility():
@@ -17,6 +19,7 @@ class VariableUtility():
         return self.InputFilePath
 
     def setOutputFileLocation(self, location): #If the OutputFileLocation is a directory then it will be set, otherwise it will be set to an empty string
+        location.replace("/", "\\")
         self.OutputFileLocation = location
         if(self.OutputCheckValidity()):
             return True
@@ -33,6 +36,7 @@ class VariableUtility():
             return False
 
     def setInputFilePath(self, path): #If the InputFilePath is a file on the filesystem and ends with '.docx' then it will be set, otherwise it will be set to an empty string
+        path.replace("/", "\\")
         self.InputFilePath = path
         if(self.InputCheckValidity()):
             return True
