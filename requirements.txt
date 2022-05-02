@@ -1,0 +1,4 @@
+#Requirements for the Docx Data Extractor
+python-docx==0.8.11
+docx2txt==0.8
+docx2python==2.0.4 
